@@ -98,7 +98,6 @@ public class AccountService {
                     Account authenticateAccount = accountRepository.authenticate(accountName, tempAccount.getPassword());
                     return authenticateAccount;
                 } else {
-//                System.out.println("sai mat khau");
                     throw new AuthenticationAccountException("Incorrect Password!");
                 }
             } else {

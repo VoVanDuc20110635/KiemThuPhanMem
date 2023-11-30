@@ -1,6 +1,7 @@
 package com.data.filtro.controller.user;
 
 import com.data.filtro.model.*;
+import com.data.filtro.repository.CartItemRepository;
 import com.data.filtro.repository.CartRepository;
 import com.data.filtro.service.*;
 import jakarta.servlet.http.HttpSession;
@@ -10,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -25,6 +27,9 @@ public class CartController {
 
     @Autowired
     CartRepository cartRepository;
+
+    @Autowired
+    CartItemRepository cartItemRepository;
 
     @Autowired
     CartService cartService;
@@ -75,8 +80,41 @@ public class CartController {
                 cart = cartService.createCart(user);
                 session.setAttribute("cart", cart);
             }
-            cartService.addProductToCart(cart, productId, quantity);
-        } else if (guestCart != null) {
+            Product product = productService.getProductById(productId);
+            if (product == null) {
+                throw new RuntimeException("Không tìm thấy sản phẩm!");
+            }
+            List<CartItem> cartItemList = cart.getCartItemList();
+            int temp = 0;
+            boolean isExist = false;
+            if (cartItemList.size() > 0){
+                for (CartItem cartItem : cartItemList) {
+                    if (cartItem.getProduct().getId() == productId) {
+                        cartItem.setQuantity(quantity);
+                        cartItem.setTotal(product.getPrice() * quantity);
+                        cartItemRepository.save(cartItem);
+                        isExist = true;
+                        break;
+                    }
+                    temp = temp + 1;
+                    if (temp == cartItemList.size()) break;
+                }
+            }
+            if (isExist == false){
+                CartItem newCartItem = new CartItem();
+                newCartItem.setProduct(product);
+                newCartItem.setPrice(product.getPrice());
+                newCartItem.setQuantity(quantity);
+                newCartItem.setTotal(product.getPrice() * quantity);
+                newCartItem.setPurchasedDate(new Date());
+                newCartItem.setCart(cart);
+                cart.getCartItemList().add(newCartItem);
+
+                cart.setUpdatedDate(newCartItem.getPurchasedDate());
+                cartRepository.save(cart);
+            }
+        }
+        else if (guestCart != null) {
             cartService.addProductToGuestCart(guestCart, productId, quantity);
             return "redirect:/cart";
         } else {

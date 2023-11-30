@@ -132,8 +132,6 @@ public class CartService {
 
     public Cart convertGuestCartToCart(GuestCart guestCart, User user) {
         Cart cart = cartRepository.findCartByUserId(user.getId());
-//        System.out.println("user la: " + user.getName() + ", id: " + user.getId());
-//        System.out.println(cart == null ? "null" : "not null");
         if (cart == null) {
             cart = createCart(user);
         }

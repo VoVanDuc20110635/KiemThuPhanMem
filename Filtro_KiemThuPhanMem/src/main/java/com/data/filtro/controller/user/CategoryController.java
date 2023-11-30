@@ -96,7 +96,8 @@ public class CategoryController {
                 productPage = productService.getAll(pageable);
             }
             currentIdAll = "all";
-        } else {
+        }
+        else {
             if (dataHighPrice != 1000 && dataOriginId != 0){
                 productPage = productService.getProductByCategoryAndPriceAndMaterial(Integer.parseInt(id), dataLowPrice, dataHighPrice, dataOriginId, pageable);
             } else if (dataHighPrice != 1000){

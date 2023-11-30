@@ -153,29 +153,6 @@ public class OrderService {
 
             int status = order.getStatus();
             if (status == 2) {
-//                try {
-//                    Timer timer = new Timer();
-//                    timer.schedule(new TimerTask() {
-//                        @Override
-//                        public void run() {
-//                            order.setStatus(3);
-//                            orderRepository.save(order);
-//                            System.out.println("Order status updated to shipped");
-//                            System.out.println("Current time: " + System.currentTimeMillis());
-//                            timer.schedule(new TimerTask() {
-//                                @Override
-//                                public void run() {
-//                                    order.setStatus(4);
-//                                    orderRepository.save(order);
-//                                    System.out.println("Order status updated to delivered");
-//                                }
-//                            }, 300000L);
-//                        }
-//                    }, 60000L);
-//
-//                } catch (Exception ex) {
-//                    ex.printStackTrace();
-//                }
                 try {
                     Timer timer = new Timer();
                     TimerTask shippedTask = new TimerTask() {
@@ -183,14 +160,11 @@ public class OrderService {
                         public void run() {
                             order.setStatus(3);
                             orderRepository.save(order);
-                            System.out.println("Order status updated to shipped");
-                            System.out.println("Current time: " + System.currentTimeMillis());
                             TimerTask deliveredTask = new TimerTask() {
                                 @Override
                                 public void run() {
                                     order.setStatus(4);
                                     orderRepository.save(order);
-                                    System.out.println("Order status updated to delivered");
                                 }
                             };
                             timer.schedule(deliveredTask, 300000L);
